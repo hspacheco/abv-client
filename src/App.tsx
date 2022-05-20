@@ -9,13 +9,13 @@ import {
   CheckboxLabel,
 } from "./components/checkbox";
 import { CheckIcon } from "@radix-ui/react-icons";
-import { dictionary } from "../dictionary";
+import { dictionary, fileNames } from "../dictionary";
 import { Flex } from "./components/flex";
 import { Results } from "./features/results";
 import { ScrollArea } from "./components/scroll-area";
 import { blackA } from "@radix-ui/colors";
 import { PlusIcon } from "@radix-ui/react-icons";
-import { IconButton } from "./components/button";
+import { Button, IconButton } from "./components/button";
 
 const SymptomsGroup = () => (
   <Flex direction="column">
@@ -34,6 +34,23 @@ const SymptomsGroup = () => (
   </Flex>
 );
 
+const FilesGroup = () => (
+  <Flex direction="column">
+    {fileNames.map((file, idx) => (
+      <Flex align="center" css={{ marginBottom: 8 }} key={idx + file}>
+        <Checkbox defaultChecked id={file}>
+          <CheckboxIndicator>
+            <CheckIcon />
+          </CheckboxIndicator>
+        </Checkbox>
+        <CheckboxLabel css={{ paddingLeft: 15 }} htmlFor={file}>
+          {file}
+        </CheckboxLabel>
+      </Flex>
+    ))}
+  </Flex>
+);
+
 // Da pra colocar um filtro como bigramas e trigramas por exemplo
 // Adicionar total de sintomas
 // Adiciona busca dentro dos sintomas
@@ -41,6 +58,10 @@ const SymptomsGroup = () => (
 // Barra de progresso
 // Porcentagem associada dos sintomas para o genoma
 // Artigos disponiveis
+// Conversao de valores grandes está quebrando as colunas e nao formata direito
+// Adicionar checkbox selecionar todos
+// Adicionar checkbox bigramas trigramas
+// adicionar campo de texto para escrever sintomas
 
 const Title = styled("h2", {
   fontSize: 18,
@@ -50,7 +71,15 @@ const Title = styled("h2", {
 const GlobalGrid = styled("div", {
   width: "100%",
   display: "grid",
-  gridTemplateColumns: "repeat(2, 10em) 1fr",
+  gridTemplateColumns: "20em 1fr",
+});
+
+const ConfigGrid = styled("div", {
+  width: "100%",
+  display: "grid",
+  gridTemplateColumns: "repeat(2, 1fr)",
+  gridTemplateRows: "1fr auto",
+  rowGap: 18,
 });
 
 const BoxShadow = styled("div", {
@@ -65,29 +94,37 @@ function App() {
       </header>
       <div className="App-content">
         <GlobalGrid>
-          <div>
-            <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
-              <Title css={{ marginRight: 8 }}>Sintomas</Title>
-              <IconButton>
-                <PlusIcon />
-              </IconButton>
-            </Flex>
-            <ScrollArea scrollHeight="300px">
-              <SymptomsGroup />
-            </ScrollArea>
-          </div>
-          <div>
-            <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
-              <Title css={{ marginRight: 8 }} >Textos/Genomas</Title>
-              <IconButton>
-                <PlusIcon />
-              </IconButton>
-            </Flex>
-            <ScrollArea scrollHeight="300px">
-              <SymptomsGroup />
-            </ScrollArea>
-          </div>
-          <div style={{ borderLeft: "solid 1px whitesmoke", paddingLeft: 8 }}>
+          <ConfigGrid>
+            <div>
+              <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
+                <Title css={{ marginRight: 8 }}>Sintomas</Title>
+                <IconButton>
+                  <PlusIcon />
+                </IconButton>
+              </Flex>
+              <ScrollArea scrollHeight="400px">
+                <SymptomsGroup />
+              </ScrollArea>
+            </div>
+            <div>
+              <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
+                <Title css={{ marginRight: 8 }}>Textos/Genomas</Title>
+                <IconButton>
+                  <PlusIcon />
+                </IconButton>
+              </Flex>
+              <ScrollArea scrollHeight="400px">
+                <FilesGroup />
+              </ScrollArea>
+            </div>
+            <Button
+              variant="green"
+              css={{ marginBottom: 8, gridColumn: "1/3" }}
+            >
+              Processar informações
+            </Button>
+          </ConfigGrid>
+          <div style={{ borderLeft: "solid 1px #ffe4e4", paddingLeft: 8 }}>
             <Flex direction="row" align="center" justify="spaceBetween">
               <Title>Resultados</Title> <Input placeholder="pesquisar" />
             </Flex>

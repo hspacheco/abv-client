@@ -2,51 +2,70 @@ import { styled } from "@stitches/react";
 import { useMemo } from "react";
 import { useTable } from "react-table";
 import { Flex } from "../../components/flex";
+import { IResult, MOCK_RESULTS } from "../../../mock-results";
+
+const GridResult = styled("div", {
+  display: "grid",
+  gridTemplateColumns: "15ch 1fr",
+});
+
+const TableDashed = styled("table", {
+  borderSpacing: 0,
+  width: "100%",
+  borderCollapse: "collapse",
+  // "&::nth-child(odd)": {
+  //   backgroundColor: "White",
+  //   borderTop: "solid 1px #f1eded",
+  // },
+});
+
+const TBody = styled("tbody", {
+  fontSize: 14,
+  "tr:nth-child(even)": {
+    backgroundColor: "White",
+    borderTop: "solid 1px #f1eded",
+    borderBottom: "solid 1px #f1eded",
+  },
+});
 
 export function TableResults() {
   const data = useMemo(
-    () => [
-      {
-        col1: "asdasd",
-        col2: "World",
-        col3: "Teste",
-      },
-      {
-        col1: "react-table",
-        col2: "rocks",
-        col3: "Teste",
-      },
-      {
-        col1: "whatever",
-        col2: "you want",
-        col3: "Teste",
-      },
-    ],
-    []
+    () =>
+      Object.entries(MOCK_RESULTS).map(([title, data]) => ({
+        name: title,
+        symptoms: data.symptoms,
+        associatedGenome: data.associatedGenome,
+      })),
+    [MOCK_RESULTS]
   );
 
   const columns = useMemo(
     () => [
       {
-        Header: "Nome/Genoma",
-        accessor: "col1", // accessor is the "key" in the data
+        Header: "Texto/Genoma",
+        accessor: "name", // accessor is the "key" in the data
       },
       {
         Header: "Sintomas",
-        accessor: "col2",
-        Cell: (data: any) => (
-          <Flex direction="column">
-            <div style={{ lineHeight: "24px" }}>{data.cell.value}</div>
-            <div style={{ lineHeight: "24px" }}>{data.cell.value}</div>
-            <div style={{ lineHeight: "24px" }}>{data.cell.value}</div>
-            <div style={{ lineHeight: "24px" }}>{data.cell.value}</div>
-            <div style={{ lineHeight: "24px" }}>{data.cell.value}</div>
-          </Flex>
-        ),
+        accessor: "symptoms",
+        Cell: (data: any) =>
+          data.cell.value.map((symp: any) => (
+            <GridResult>
+              <span style={{ lineHeight: "24px" }}>{symp.name}</span>
+              <span style={{ lineHeight: "24px" }}>{symp.score}</span>
+            </GridResult>
+          )),
       },
       {
         Header: "Nível de similaridade",
-        accessor: "col3",
+        accessor: "associatedGenome",
+        Cell: (data: any) =>
+          data.cell.value.map((associated: any) => (
+            <GridResult>
+              <span style={{ lineHeight: "24px" }}>{associated.name}</span>
+              <span style={{ lineHeight: "24px" }}>{associated.score}</span>
+            </GridResult>
+          )),
       },
     ],
     []
@@ -70,7 +89,7 @@ export function TableResults() {
   });
 
   return (
-    <table style={{ borderSpacing: 0, width: "100%" }} {...getTableProps()}>
+    <TableDashed {...getTableProps()}>
       <thead>
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -82,7 +101,7 @@ export function TableResults() {
           </tr>
         ))}
       </thead>
-      <tbody style={{ fontSize: 14 }} {...getTableBodyProps()}>
+      <TBody {...getTableBodyProps()}>
         {rows.map((row) => {
           prepareRow(row);
           return (
@@ -97,7 +116,7 @@ export function TableResults() {
             </tr>
           );
         })}
-      </tbody>
-    </table>
+      </TBody>
+    </TableDashed>
   );
 }
