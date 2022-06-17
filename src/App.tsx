@@ -66,6 +66,7 @@ const FilesGroup = () => (
 const Title = styled("h2", {
   fontSize: 18,
   textAlign: "left",
+  textTransform: "uppercase"
 });
 
 const GlobalGrid = styled("div", {
@@ -78,7 +79,7 @@ const ConfigGrid = styled("div", {
   width: "100%",
   display: "grid",
   gridTemplateColumns: "repeat(2, 1fr)",
-  gridTemplateRows: "1fr auto",
+  gridTemplateRows: "450px auto",
   rowGap: 18,
 });
 
@@ -108,7 +109,7 @@ function App() {
             </div>
             <div>
               <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
-                <Title css={{ marginRight: 8 }}>Textos/Genomas</Title>
+                <Title css={{ marginRight: 8 }}>Locus/Arquivos</Title>
                 <IconButton>
                   <PlusIcon />
                 </IconButton>
@@ -124,9 +125,27 @@ function App() {
               Processar informações
             </Button>
           </ConfigGrid>
-          <div style={{ borderLeft: "solid 1px #ffe4e4", paddingLeft: 8 }}>
-            <Flex direction="row" align="center" justify="spaceBetween">
-              <Title>Resultados</Title> <Input placeholder="pesquisar" />
+          <div
+            style={{
+              borderLeft: "solid 1px #ffe4e4",
+              paddingLeft: 8,
+              maxHeight: 500,
+              overflowY: "scroll",
+            }}
+          >
+            <Flex
+              direction="row"
+              align="center"
+              justify="spaceBetween"
+              css={{
+                backgroundColor: "#f9f8f8",
+                position: "sticky",
+                top: 0,
+                padding: "0 8px",
+              }}
+            >
+              <Title>Resultados</Title>{" "}
+              <Input css={{ width: 400 }} placeholder="Pesquisar ..." />
             </Flex>
             <Results />
           </div>
