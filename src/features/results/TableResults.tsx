@@ -27,7 +27,7 @@ const TBody = styled("tbody", {
 });
 
 function ResultTag({ score }: { score: number }) {
-  return score;
+  // return score;
   const type =
     score <= 0.3
       ? "danger"

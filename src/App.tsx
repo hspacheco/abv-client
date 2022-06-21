@@ -11,11 +11,14 @@ import {
 import { CheckIcon } from "@radix-ui/react-icons";
 import { dictionary, fileNames } from "../dictionary";
 import { Flex } from "./components/flex";
-import { Results } from "./features/results";
+import { TableResults } from "./features/results";
 import { ScrollArea } from "./components/scroll-area";
 import { blackA } from "@radix-ui/colors";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { Button, IconButton } from "./components/button";
+import { PageHeader } from "./components/header";
+import { PageFooter } from "./components/footer";
+import { ImportDialog } from "./features/import-dialog";
 
 const SymptomsGroup = () => (
   <Flex direction="column">
@@ -66,7 +69,7 @@ const FilesGroup = () => (
 const Title = styled("h2", {
   fontSize: 18,
   textAlign: "left",
-  textTransform: "uppercase"
+  textTransform: "uppercase",
 });
 
 const GlobalGrid = styled("div", {
@@ -90,9 +93,10 @@ const BoxShadow = styled("div", {
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Resultados</h1>
-      </header>
+      <PageHeader>
+        <h1>Latent Semantic Analysis</h1>
+        <p>botar um texto sobre latent semantic analysis aqui</p>
+      </PageHeader>
       <div className="App-content">
         <GlobalGrid>
           <ConfigGrid>
@@ -102,6 +106,7 @@ function App() {
                 <IconButton>
                   <PlusIcon />
                 </IconButton>
+                <ImportDialog />
               </Flex>
               <ScrollArea scrollHeight="400px">
                 <SymptomsGroup />
@@ -144,13 +149,16 @@ function App() {
                 padding: "0 8px",
               }}
             >
-              <Title>Resultados</Title>{" "}
+              <Title>Resultados</Title>
               <Input css={{ width: 400 }} placeholder="Pesquisar ..." />
             </Flex>
-            <Results />
+            <TableResults />
           </div>
         </GlobalGrid>
       </div>
+      <PageFooter>
+        <p>Se apresentar e falar sobre o projeto</p>
+      </PageFooter>
     </div>
   );
 }
