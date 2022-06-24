@@ -1,7 +1,7 @@
 import { violet } from "@radix-ui/colors";
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { Cross2Icon, PlusIcon } from "@radix-ui/react-icons";
 import { styled } from "@stitches/react";
-import { Button } from "../../components/button";
+import { Button, IconButton } from "../../components/button";
 import {
   Dialog,
   DialogClose,
@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../components/dialog";
+import { UploadFile } from "../upload-file";
 
 const CloseButton = styled("button", {
   all: "unset",
@@ -30,17 +31,31 @@ const CloseButton = styled("button", {
 });
 
 export function ImportDialog() {
+  console.log(import.meta.env.APP_ID);
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="violet">Importar</Button>
+        <IconButton>
+          <PlusIcon />
+        </IconButton>
+        {/* <Button variant="violet">Importar</Button> */}
       </DialogTrigger>
       <DialogContent>
-        <DialogTitle>Importar alguma coisa</DialogTitle>
-        <DialogDescription>
-          Desrição do dialog
-        </DialogDescription>
-        <p>conteúdo aqui</p>
+        <DialogTitle>Importar documentos</DialogTitle>
+        <DialogDescription>Aumente a base de arquivos</DialogDescription>
+        <p>
+          Submeta o arquivo para ser armazenado na nossa base. Após o envio
+          preencha o campo <strong>nome de referência</strong>. O nome
+          referência servirá para a exibição de resultados, caso não seja
+          definido o nome do arquivo será utilizado.
+        </p>
+        <p>
+          Após esta etapa selecione <strong color="green">Processar </strong>
+        </p>
+        <p>
+          Por padrão suportamos apenas arquivos <strong>.pdf</strong>
+        </p>
+        <UploadFile id="upload-file" labelText="Enviar" />
         <DialogClose asChild>
           <CloseButton aria-label="Close">
             <Cross2Icon />

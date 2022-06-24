@@ -106,7 +106,6 @@ function App() {
                 <IconButton>
                   <PlusIcon />
                 </IconButton>
-                <ImportDialog />
               </Flex>
               <ScrollArea scrollHeight="400px">
                 <SymptomsGroup />
@@ -115,9 +114,7 @@ function App() {
             <div>
               <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
                 <Title css={{ marginRight: 8 }}>Locus/Arquivos</Title>
-                <IconButton>
-                  <PlusIcon />
-                </IconButton>
+                <ImportDialog />
               </Flex>
               <ScrollArea scrollHeight="400px">
                 <FilesGroup />
