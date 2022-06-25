@@ -1,6 +1,7 @@
 import { violet } from "@radix-ui/colors";
 import { Cross2Icon, PlusIcon } from "@radix-ui/react-icons";
 import { styled } from "@stitches/react";
+import { useState } from "react";
 import { Button, IconButton } from "../../components/button";
 import {
   Dialog,
@@ -10,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../components/dialog";
-import { UploadFile } from "../upload-file";
+import { Input } from "../../components/input";
 
 const CloseButton = styled("button", {
   all: "unset",
@@ -30,7 +31,24 @@ const CloseButton = styled("button", {
   "&:focus": { boxShadow: `0 0 0 2px ${violet.violet7}` },
 });
 
-export function ImportDialog() {
+const Label = styled("label", {
+  fontSize: 12,
+  display: "block",
+  marginBottom: 4,
+});
+
+interface IProps {
+  onSave: (symptom: { name: string; slug: string }) => void;
+}
+
+export function SymptomDialog({ onSave }: IProps) {
+  const [value, setValue] = useState("");
+
+  function handleSymptom() {
+    console.log("asdad");
+    onSave({ name: value, slug: value.replace(/\s/g, "_") });
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -40,21 +58,27 @@ export function ImportDialog() {
         {/* <Button variant="violet">Importar</Button> */}
       </DialogTrigger>
       <DialogContent>
-        <DialogTitle>Importar documentos</DialogTitle>
-        <DialogDescription>Aumente a base de arquivos</DialogDescription>
+        <DialogTitle>Importar termo</DialogTitle>
+        <DialogDescription>
+          Aumente a base de sintomas para processamento
+        </DialogDescription>
         <p>
-          Submeta o arquivo para ser armazenado na nossa base. Após o envio
-          preencha o campo <strong>nome de referência</strong>. O nome
-          referência servirá para a exibição de resultados, caso não seja
-          definido o nome do arquivo será utilizado.
+          Adicione um novo termo correspondente à um sintoma que será utilizado
+          no LSA
         </p>
-        <p>
-          Após esta etapa selecione <strong color="green">Processar </strong>
-        </p>
-        <p>
-          Por padrão suportamos apenas arquivos <strong>.pdf</strong>
-        </p>
-        <UploadFile id="upload-file" labelText="Enviar" />
+        <p>Os termos adicionados serão limpos ao término do uso da aplicação</p>
+
+        <Label htmlFor="term">Adicionar termo:</Label>
+        <Input
+          placeholder="ex: muscle pain"
+          value={value}
+          onChange={(ev) => {
+            setValue(ev.target.value);
+          }}
+        />
+        <Button variant="green" css={{ marginLeft: 6 }} onClick={handleSymptom}>
+          Salvar
+        </Button>
         <DialogClose asChild>
           <CloseButton aria-label="Close">
             <Cross2Icon />

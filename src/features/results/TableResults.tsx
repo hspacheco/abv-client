@@ -39,15 +39,27 @@ function ResultTag({ score }: { score: number }) {
   return <Tag type={type}>{name}</Tag>;
 }
 
-export function TableResults() {
+type ResultValue = {
+  associatedGenome: Array<{ name: string; score: number }>;
+  symptoms: Array<{ name: string; score: number }>;
+};
+
+interface TableProps {
+  lsaResults: Record<string, ResultValue> | null;
+}
+
+export function TableResults({ lsaResults }: TableProps) {
+
+  if (!lsaResults) return <div>Carregando ...</div>
+
   const data = useMemo(
     () =>
-      Object.entries(MOCK_RESULTS).map(([title, data]) => ({
+      Object.entries(lsaResults).map(([title, data]) => ({
         name: title,
         symptoms: data.symptoms,
         associatedGenome: data.associatedGenome,
       })),
-    [MOCK_RESULTS]
+    [lsaResults]
   );
 
   const columns = useMemo(

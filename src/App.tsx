@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { Input } from "./components/input";
@@ -8,7 +8,7 @@ import {
   CheckboxIndicator,
   CheckboxLabel,
 } from "./components/checkbox";
-import { CheckIcon } from "@radix-ui/react-icons";
+import { CheckIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { dictionary, fileNames } from "../dictionary";
 import { Flex } from "./components/flex";
 import { TableResults } from "./features/results";
@@ -19,40 +19,9 @@ import { Button, IconButton } from "./components/button";
 import { PageHeader } from "./components/header";
 import { PageFooter } from "./components/footer";
 import { ImportDialog } from "./features/import-dialog";
-
-const SymptomsGroup = () => (
-  <Flex direction="column">
-    {dictionary.map((symp, idx) => (
-      <Flex align="center" css={{ marginBottom: 8 }} key={idx + symp}>
-        <Checkbox defaultChecked id="c1">
-          <CheckboxIndicator>
-            <CheckIcon />
-          </CheckboxIndicator>
-        </Checkbox>
-        <CheckboxLabel css={{ paddingLeft: 15 }} htmlFor="c1">
-          {symp}
-        </CheckboxLabel>
-      </Flex>
-    ))}
-  </Flex>
-);
-
-const FilesGroup = () => (
-  <Flex direction="column">
-    {fileNames.map((file, idx) => (
-      <Flex align="center" css={{ marginBottom: 8 }} key={idx + file}>
-        <Checkbox defaultChecked id={file}>
-          <CheckboxIndicator>
-            <CheckIcon />
-          </CheckboxIndicator>
-        </Checkbox>
-        <CheckboxLabel css={{ paddingLeft: 15 }} htmlFor={file}>
-          {file}
-        </CheckboxLabel>
-      </Flex>
-    ))}
-  </Flex>
-);
+import { SymptomsGroup } from "./features/symptoms-group";
+import { SymptomDialog } from "./features/symptom-dialog";
+import { FilesGroup } from "./features/files-group";
 
 // Da pra colocar um filtro como bigramas e trigramas por exemplo
 // Adicionar total de sintomas
@@ -90,7 +59,98 @@ const BoxShadow = styled("div", {
   boxShadow: `0 2px 10px ${blackA.blackA7}`,
 });
 
+type APISymptoms = {
+  allSymptoms: Array<{ slug: string; name: string }>;
+};
+
+type APIFiles = {
+  files: string[];
+};
+
+type ResultValue = {
+  associatedGenome: Array<{ name: string; score: number }>;
+  symptoms: Array<{ name: string; score: number }>;
+};
+
+type APILsaScore = {
+  lsa_result: Record<string, ResultValue>;
+};
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 function App() {
+  const [availableSymptoms, setSymptoms] = useState<APISymptoms | null>(null);
+  const [availableFiles, setAvailableFiles] = useState<APIFiles | null>(null);
+  const [lsaResult, setLsaResult] = useState<APILsaScore | null>(null);
+  const [symptomsQuery, setSymptomsQuery] = useState("");
+  const [filesQuery, setFilesQuery] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`${API_URL}/symptoms`);
+        const result = await res.json();
+        setSymptoms(result);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
+
+  async function handleFileNames() {
+    try {
+      const res = await fetch(`${API_URL}/file-names`);
+      const result = (await res.json()) as APIFiles;
+      setAvailableFiles(result);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function handleSubmit() {
+    try {
+      const res = await fetch(
+        `${API_URL}/lsa-score?${symptomsQuery}&${filesQuery}`
+      );
+      const result = (await res.json()) as APILsaScore;
+      setLsaResult(result)
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  function createSymptomsQuery(symptoms: APISymptoms["allSymptoms"]) {
+    const urlSearch = new URLSearchParams();
+
+    for (const symp of symptoms) {
+      urlSearch.append("symptom", symp.slug);
+    }
+    return urlSearch.toString();
+  }
+
+  function createFilesQuery(files: APIFiles["files"]) {
+    const urlSearch = new URLSearchParams();
+
+    for (const file of files) {
+      urlSearch.append("file_name", file);
+    }
+    return urlSearch.toString();
+  }
+
+  const memoFiles = useMemo(
+    () =>
+      availableFiles?.files.map((res) => ({
+        name: res,
+        slug: res,
+      })) ?? null,
+    [availableFiles]
+  );
+
+  const memoSymptoms = useMemo(
+    () => availableSymptoms?.allSymptoms ?? null,
+    [availableSymptoms]
+  );
+
   return (
     <div className="App">
       <PageHeader>
@@ -103,26 +163,47 @@ function App() {
             <div>
               <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
                 <Title css={{ marginRight: 8 }}>Sintomas</Title>
-                <IconButton>
-                  <PlusIcon />
-                </IconButton>
+                <SymptomDialog
+                  onSave={(val) => {
+                    setSymptoms((old) =>
+                      old ? { allSymptoms: [...old.allSymptoms, val] } : null
+                    );
+                  }}
+                />
+                {/* <Button onClick={handleSymptoms}>Teste envio</Button> */}
               </Flex>
               <ScrollArea scrollHeight="400px">
-                <SymptomsGroup />
+                <SymptomsGroup
+                  symptoms={memoSymptoms}
+                  onChange={(values) => {
+                    setSymptomsQuery(createSymptomsQuery(values));
+                    console.log(createSymptomsQuery(values));
+                  }}
+                />
               </ScrollArea>
             </div>
             <div>
               <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
                 <Title css={{ marginRight: 8 }}>Locus/Arquivos</Title>
                 <ImportDialog />
+                <IconButton css={{ marginLeft: 6 }} onClick={handleFileNames}>
+                  <UpdateIcon />
+                </IconButton>
               </Flex>
-              <ScrollArea scrollHeight="400px">
-                <FilesGroup />
-              </ScrollArea>
+
+              <FilesGroup
+                files={memoFiles}
+                onChange={(values) => {
+                  setFilesQuery(createFilesQuery(values.map((v) => v.name)));
+                  console.log(createFilesQuery(values.map((v) => v.name)));
+                  // console.log(values);
+                }}
+              />
             </div>
             <Button
               variant="green"
               css={{ marginBottom: 8, gridColumn: "1/3" }}
+              onClick={handleSubmit}
             >
               Processar informações
             </Button>
@@ -149,7 +230,7 @@ function App() {
               <Title>Resultados</Title>
               <Input css={{ width: 400 }} placeholder="Pesquisar ..." />
             </Flex>
-            <TableResults />
+            <TableResults lsaResults={lsaResult?.lsa_result ?? null}/>
           </div>
         </GlobalGrid>
       </div>
