@@ -4,6 +4,8 @@ import { useTable } from "react-table";
 import { Flex } from "../../components/flex";
 import { IResult, MOCK_RESULTS } from "../../../mock-results";
 import { Tag } from "../../components/tag";
+import { Empty } from "../../components/empty";
+import { LoadingWrapper } from "../../components/loading";
 
 const GridResult = styled("div", {
   display: "grid",
@@ -49,8 +51,7 @@ interface TableProps {
 }
 
 export function TableResults({ lsaResults }: TableProps) {
-
-  if (!lsaResults) return <div>Carregando ...</div>
+  if (!lsaResults) return <Empty />;
 
   const data = useMemo(
     () =>

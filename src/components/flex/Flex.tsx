@@ -22,6 +22,9 @@ export const Flex = styled("div", {
     justify: {
       spaceBetween: {
         justifyContent: "space-between"
+      },
+      center: {
+        justifyContent: "center"
       }
     }
   },

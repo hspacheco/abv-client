@@ -3,6 +3,7 @@ import { CheckIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { CheckboxLabel } from "../../components/checkbox";
 import { Flex } from "../../components/flex";
+import { Empty } from "../../components/empty";
 
 type SymptomsGroup = Array<{ name: string; slug: string }>;
 
@@ -22,7 +23,7 @@ export function SymptomsGroup({ symptoms, onChange }: IProps) {
     onChange?.(selectedSymptoms);
   }, [selectedSymptoms])
 
-  if (!symptoms) return <div>Carregando ...</div>;
+  if (!symptoms) return <Empty />;
 
   return (
     <Flex direction="column">

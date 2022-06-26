@@ -5,6 +5,7 @@ import { CheckboxLabel } from "../../components/checkbox";
 import { Flex } from "../../components/flex";
 import { Input } from "../../components/input";
 import { ScrollArea } from "../../components/scroll-area";
+import { Empty } from "../../components/empty";
 
 type FileItems = Array<{ name: string; slug: string }>;
 
@@ -39,7 +40,7 @@ export function FilesGroup({ files, onChange }: IProps) {
     );
   }
 
-  if (!files) return <div>Carregando ...</div>;
+  if (!files) return <Empty />;
 
   return (
     <Flex direction="column">

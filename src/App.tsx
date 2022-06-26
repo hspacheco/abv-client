@@ -22,6 +22,7 @@ import { ImportDialog } from "./features/import-dialog";
 import { SymptomsGroup } from "./features/symptoms-group";
 import { SymptomDialog } from "./features/symptom-dialog";
 import { FilesGroup } from "./features/files-group";
+import { LoadingWrapper } from "./components/loading";
 
 // Da pra colocar um filtro como bigramas e trigramas por exemplo
 // Adicionar total de sintomas
@@ -84,6 +85,7 @@ function App() {
   const [lsaResult, setLsaResult] = useState<APILsaScore | null>(null);
   const [symptomsQuery, setSymptomsQuery] = useState("");
   const [filesQuery, setFilesQuery] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -98,24 +100,30 @@ function App() {
   }, []);
 
   async function handleFileNames() {
+    setLoading(true);
     try {
       const res = await fetch(`${API_URL}/file-names`);
       const result = (await res.json()) as APIFiles;
       setAvailableFiles(result);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function handleSubmit() {
+    setLoading(true);
     try {
       const res = await fetch(
         `${API_URL}/lsa-score?${symptomsQuery}&${filesQuery}`
       );
       const result = (await res.json()) as APILsaScore;
-      setLsaResult(result)
+      setLsaResult(result);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -157,83 +165,85 @@ function App() {
         <h1>Latent Semantic Analysis</h1>
         <p>botar um texto sobre latent semantic analysis aqui</p>
       </PageHeader>
-      <div className="App-content">
-        <GlobalGrid>
-          <ConfigGrid>
-            <div>
-              <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
-                <Title css={{ marginRight: 8 }}>Sintomas</Title>
-                <SymptomDialog
-                  onSave={(val) => {
-                    setSymptoms((old) =>
-                      old ? { allSymptoms: [...old.allSymptoms, val] } : null
-                    );
-                  }}
-                />
-                {/* <Button onClick={handleSymptoms}>Teste envio</Button> */}
-              </Flex>
-              <ScrollArea scrollHeight="400px">
-                <SymptomsGroup
-                  symptoms={memoSymptoms}
-                  onChange={(values) => {
-                    setSymptomsQuery(createSymptomsQuery(values));
-                    console.log(createSymptomsQuery(values));
-                  }}
-                />
-              </ScrollArea>
-            </div>
-            <div>
-              <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
-                <Title css={{ marginRight: 8 }}>Locus/Arquivos</Title>
-                <ImportDialog />
-                <IconButton css={{ marginLeft: 6 }} onClick={handleFileNames}>
-                  <UpdateIcon />
-                </IconButton>
-              </Flex>
+      <LoadingWrapper isLoading={isLoading}>
+        <div className="App-content">
+          <GlobalGrid>
+            <ConfigGrid>
+              <div>
+                <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
+                  <Title css={{ marginRight: 8 }}>Sintomas</Title>
+                  <SymptomDialog
+                    onSave={(val) => {
+                      setSymptoms((old) =>
+                        old ? { allSymptoms: [...old.allSymptoms, val] } : null
+                      );
+                    }}
+                  />
+                </Flex>
+                <ScrollArea scrollHeight="400px">
+                  <SymptomsGroup
+                    symptoms={memoSymptoms}
+                    onChange={(values) => {
+                      setSymptomsQuery(createSymptomsQuery(values));
+                      console.log(createSymptomsQuery(values));
+                    }}
+                  />
+                </ScrollArea>
+              </div>
+              <div>
+                <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
+                  <Title css={{ marginRight: 8 }}>Locus/Arquivos</Title>
+                  <ImportDialog />
+                  <IconButton css={{ marginLeft: 6 }} onClick={handleFileNames}>
+                    <UpdateIcon />
+                  </IconButton>
+                </Flex>
 
-              <FilesGroup
-                files={memoFiles}
-                onChange={(values) => {
-                  setFilesQuery(createFilesQuery(values.map((v) => v.name)));
-                  console.log(createFilesQuery(values.map((v) => v.name)));
-                  // console.log(values);
-                }}
-              />
-            </div>
-            <Button
-              variant="green"
-              css={{ marginBottom: 8, gridColumn: "1/3" }}
-              onClick={handleSubmit}
-            >
-              Processar informações
-            </Button>
-          </ConfigGrid>
-          <div
-            style={{
-              borderLeft: "solid 1px #ffe4e4",
-              paddingLeft: 8,
-              maxHeight: 500,
-              overflowY: "scroll",
-            }}
-          >
-            <Flex
-              direction="row"
-              align="center"
-              justify="spaceBetween"
-              css={{
-                backgroundColor: "#f9f8f8",
-                position: "sticky",
-                top: 0,
-                padding: "0 8px",
+                <FilesGroup
+                  files={memoFiles}
+                  onChange={(values) => {
+                    setFilesQuery(createFilesQuery(values.map((v) => v.name)));
+                    console.log(createFilesQuery(values.map((v) => v.name)));
+                    // console.log(values);
+                  }}
+                />
+              </div>
+              <Button
+                variant="green"
+                css={{ marginBottom: 8, gridColumn: "1/3", zIndex: 10 }}
+                onClick={handleSubmit}
+              >
+                Processar informações
+              </Button>
+            </ConfigGrid>
+            <div
+              style={{
+                borderLeft: "solid 1px #ffe4e4",
+                paddingLeft: 8,
+                maxHeight: 500,
+                overflowY: "scroll",
               }}
             >
-              <Title>Resultados</Title>
-              <Input css={{ width: 400 }} placeholder="Pesquisar ..." />
-            </Flex>
-            <TableResults lsaResults={lsaResult?.lsa_result ?? null}/>
-          </div>
-        </GlobalGrid>
-      </div>
+              <Flex
+                direction="row"
+                align="center"
+                justify="spaceBetween"
+                css={{
+                  backgroundColor: "#f9f8f8",
+                  position: "sticky",
+                  top: 0,
+                  padding: "0 8px",
+                }}
+              >
+                <Title>Resultados</Title>
+                <Input css={{ width: 400 }} placeholder="Pesquisar ..." />
+              </Flex>
+
+              <TableResults lsaResults={lsaResult?.lsa_result ?? null} />
+            </div>
+          </GlobalGrid>
+        </div>
+      </LoadingWrapper>
       <PageFooter>
         <p>Se apresentar e falar sobre o projeto</p>
       </PageFooter>
