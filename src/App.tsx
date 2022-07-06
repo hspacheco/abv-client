@@ -8,7 +8,7 @@ import {
   CheckboxIndicator,
   CheckboxLabel,
 } from "./components/checkbox";
-import { CheckIcon, UpdateIcon } from "@radix-ui/react-icons";
+import { CheckIcon, GearIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { dictionary, fileNames } from "../dictionary";
 import { Flex } from "./components/flex";
 import { TableResults } from "./features/results";
@@ -23,6 +23,10 @@ import { SymptomsGroup } from "./features/symptoms-group";
 import { SymptomDialog } from "./features/symptom-dialog";
 import { FilesGroup } from "./features/files-group";
 import { LoadingWrapper } from "./components/loading";
+import { ConfigDialog } from "./features/config-dialog";
+import { RadioGroupIndicator, RadioGroupRadio } from "./components/radio";
+import { RadioGroup } from "@radix-ui/react-radio-group";
+import { Label } from "./components/label";
 
 // Da pra colocar um filtro como bigramas e trigramas por exemplo
 // Adicionar total de sintomas
@@ -53,7 +57,7 @@ const ConfigGrid = styled("div", {
   display: "grid",
   gridTemplateColumns: "repeat(2, 1fr)",
   gridTemplateRows: "450px auto",
-  rowGap: 18,
+  rowGap: 12,
 });
 
 const BoxShadow = styled("div", {
@@ -163,7 +167,10 @@ function App() {
     <div className="App">
       <PageHeader>
         <h1>Latent Semantic Analysis</h1>
-        <p>botar um texto sobre latent semantic analysis aqui</p>
+        <p>
+          Submeta e avalie os resultados da relevância do conteúdo
+          sintomatológico sobre arquivos.
+        </p>
       </PageHeader>
       <LoadingWrapper isLoading={isLoading}>
         <div className="App-content">
@@ -175,7 +182,7 @@ function App() {
                   <SymptomDialog
                     onSave={(val) => {
                       setSymptoms((old) =>
-                        old ? { allSymptoms: [...old.allSymptoms, val] } : null
+                        old ? { allSymptoms: [val, ...old.allSymptoms] } : null
                       );
                     }}
                   />
@@ -185,14 +192,13 @@ function App() {
                     symptoms={memoSymptoms}
                     onChange={(values) => {
                       setSymptomsQuery(createSymptomsQuery(values));
-                      console.log(createSymptomsQuery(values));
                     }}
                   />
                 </ScrollArea>
               </div>
               <div>
                 <Flex css={{ paddingRight: 16, paddingLeft: 8 }} align="center">
-                  <Title css={{ marginRight: 8 }}>Locus/Arquivos</Title>
+                  <Title css={{ marginRight: 8 }}>Arquivos</Title>
                   <ImportDialog />
                   <IconButton css={{ marginLeft: 6 }} onClick={handleFileNames}>
                     <UpdateIcon />
@@ -203,14 +209,75 @@ function App() {
                   files={memoFiles}
                   onChange={(values) => {
                     setFilesQuery(createFilesQuery(values.map((v) => v.name)));
-                    console.log(createFilesQuery(values.map((v) => v.name)));
-                    // console.log(values);
                   }}
                 />
               </div>
+              {/* Vetorizador */}
+              <div>
+                <Title css={{ marginRight: 8 }}>Weighting</Title>
+                <Flex css={{ marginBottom: 8 }}>
+                  <RadioGroup>
+                    <Flex align="center" css={{ marginBottom: 4 }}>
+                      <RadioGroupRadio checked value="tfidf" id="tfidf">
+                        <RadioGroupIndicator />
+                      </RadioGroupRadio>
+                      <Label css={{ marginBottom: 0, marginLeft: 6 }}>
+                        TF-IDF
+                      </Label>
+                    </Flex>
+                    <Flex align="center">
+                      <RadioGroupRadio value="bow" id="bow">
+                        <RadioGroupIndicator />
+                      </RadioGroupRadio>
+                      <Label css={{ marginBottom: 0, marginLeft: 6 }}>
+                        Bag-of-Words
+                      </Label>
+                    </Flex>
+                  </RadioGroup>
+                  {/* <Button
+                  variant="green"
+                  // css={{ marginBottom: 8, gridColumn: "1/3" }}
+                  onClick={handleSubmit}
+                >
+                  Processar informações
+                </Button> */}
+                </Flex>
+              </div>
+              {/* ngram-range */}
+              <div>
+                <Title css={{ marginRight: 8 }}>n-gram range</Title>
+                <Flex>
+                  <RadioGroup>
+                    <Flex align="center" css={{ marginBottom: 4 }}>
+                      <RadioGroupRadio value="unigram" id="unigram">
+                        <RadioGroupIndicator />
+                      </RadioGroupRadio>
+                      <Label css={{ marginBottom: 0, marginLeft: 6 }}>
+                        unigrama
+                      </Label>
+                    </Flex>
+                    <Flex align="center" css={{ marginBottom: 4 }}>
+                      <RadioGroupRadio checked value="uni_and_bi" id="uni_and_bi">
+                        <RadioGroupIndicator />
+                      </RadioGroupRadio>
+                      <Label css={{ marginBottom: 0, marginLeft: 6 }}>
+                        unigrama e bigrama
+                      </Label>
+                    </Flex>
+                    <Flex align="center" css={{ marginBottom: 4 }}>
+                      <RadioGroupRadio value="bigram" id="bigram">
+                        <RadioGroupIndicator />
+                      </RadioGroupRadio>
+                      <Label css={{ marginBottom: 0, marginLeft: 6 }}>
+                        bigrama
+                      </Label>
+                    </Flex>
+                  </RadioGroup>
+                </Flex>
+              </div>
               <Button
                 variant="green"
-                css={{ marginBottom: 8, gridColumn: "1/3", zIndex: 10 }}
+                css={{ marginBottom: 12, gridColumn: "1/3" }}
                 onClick={handleSubmit}
               >
                 Processar informações
@@ -220,7 +287,7 @@ function App() {
               style={{
                 borderLeft: "solid 1px #ffe4e4",
                 paddingLeft: 8,
-                maxHeight: 500,
+                maxHeight: 625,
                 overflowY: "scroll",
               }}
             >
@@ -235,7 +302,10 @@ function App() {
                   padding: "0 8px",
                 }}
               >
-                <Title>Resultados</Title>
+                <Flex align="center">
+                  <Title css={{ marginRight: 8 }}>Resultados</Title>
+                  <ConfigDialog />
+                </Flex>
                 <Input css={{ width: 400 }} placeholder="Pesquisar ..." />
               </Flex>
 
@@ -245,7 +315,10 @@ function App() {
         </div>
       </LoadingWrapper>
       <PageFooter>
-        <p>Se apresentar e falar sobre o projeto</p>
+        <p>
+          <i>Arthropode Borne Virus database</i> -{" "}
+          <a href="https://abvdb.uneb.br/">ABVdb</a>
+        </p>
       </PageFooter>
     </div>
   );

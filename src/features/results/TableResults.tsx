@@ -6,6 +6,7 @@ import { IResult, MOCK_RESULTS } from "../../../mock-results";
 import { Tag } from "../../components/tag";
 import { Empty } from "../../components/empty";
 import { LoadingWrapper } from "../../components/loading";
+import { ResultTag } from "./ResultTag";
 
 const GridResult = styled("div", {
   display: "grid",
@@ -27,19 +28,6 @@ const TBody = styled("tbody", {
     borderBottom: "solid 1px #f1eded",
   },
 });
-
-function ResultTag({ score }: { score: number }) {
-  // return score;
-  const type =
-    score <= 0.3
-      ? "danger"
-      : score < 0.6 && score > 0.3
-      ? "warning"
-      : "secondary";
-  const name =
-    score <= 0.3 ? "baixa" : score < 0.6 && score > 0.3 ? "média" : "alta";
-  return <Tag type={type}>{name}</Tag>;
-}
 
 type ResultValue = {
   associatedGenome: Array<{ name: string; score: number }>;
@@ -66,7 +54,7 @@ export function TableResults({ lsaResults }: TableProps) {
   const columns = useMemo(
     () => [
       {
-        Header: "Locus/Arquivo",
+        Header: "Nome",
         accessor: "name", // accessor is the "key" in the data
       },
       {

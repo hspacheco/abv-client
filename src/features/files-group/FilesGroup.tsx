@@ -49,7 +49,7 @@ export function FilesGroup({ files, onChange }: IProps) {
         placeholder="Buscar"
         onChange={handleChange}
       />
-      <ScrollArea scrollHeight="400px">
+      <ScrollArea scrollHeight="340px">
         <div>
           {filteredFiles.map(({ name, slug }, idx) => (
             <Flex align="center" css={{ marginBottom: 8 }} key={idx + slug}>

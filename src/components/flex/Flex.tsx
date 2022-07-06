@@ -25,6 +25,9 @@ export const Flex = styled("div", {
       },
       center: {
         justifyContent: "center"
+      },
+      end: {
+        justifyContent: "end"
       }
     }
   },

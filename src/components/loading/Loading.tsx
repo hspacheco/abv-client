@@ -10,7 +10,7 @@ const Loading = styled("span", {
   width: "100%",
   position: "relative",
   overflow: "hidden",
-  backgroundColor: "#DDDBDD",
+  backgroundColor: "rgb(87, 70, 175)",
   "&::after": {
     position: "absolute",
     top: 0,

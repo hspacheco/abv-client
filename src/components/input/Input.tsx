@@ -1,5 +1,5 @@
 import { styled } from "@stitches/react";
-import { blackA, violet} from "@radix-ui/colors";
+import { blackA, gray, violet} from "@radix-ui/colors";
 
 export const Input = styled("input", {
   all: "unset",
@@ -14,4 +14,5 @@ export const Input = styled("input", {
   color: violet.violet11,
   boxShadow: `0 0 0 1px ${violet.violet7}`,
   '&:focus': { boxShadow: `0 0 0 2px ${violet.violet8}` },
+  '&:disabled': { cursor: "not-allowed", color: gray.gray11, borderColor: gray.gray11, boxShadow: `0 0 0 1px ${gray.gray10}`,},
 });

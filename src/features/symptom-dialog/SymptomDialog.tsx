@@ -2,7 +2,7 @@ import { violet } from "@radix-ui/colors";
 import { Cross2Icon, PlusIcon } from "@radix-ui/react-icons";
 import { styled } from "@stitches/react";
 import { useState } from "react";
-import { Button, IconButton } from "../../components/button";
+import { Button, CloseButton, IconButton } from "../../components/button";
 import {
   Dialog,
   DialogClose,
@@ -12,30 +12,7 @@ import {
   DialogTrigger,
 } from "../../components/dialog";
 import { Input } from "../../components/input";
-
-const CloseButton = styled("button", {
-  all: "unset",
-  fontFamily: "inherit",
-  borderRadius: "100%",
-  height: 25,
-  width: 25,
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: violet.violet11,
-  position: "absolute",
-  top: 10,
-  right: 10,
-
-  "&:hover": { backgroundColor: violet.violet4 },
-  "&:focus": { boxShadow: `0 0 0 2px ${violet.violet7}` },
-});
-
-const Label = styled("label", {
-  fontSize: 12,
-  display: "block",
-  marginBottom: 4,
-});
+import { Label } from "../../components/label";
 
 interface IProps {
   onSave: (symptom: { name: string; slug: string }) => void;
@@ -45,7 +22,6 @@ export function SymptomDialog({ onSave }: IProps) {
   const [value, setValue] = useState("");
 
   function handleSymptom() {
-    console.log("asdad");
     onSave({ name: value, slug: value.replace(/\s/g, "_") });
   }
 
