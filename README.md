@@ -30,7 +30,7 @@ npm run dev
 
 Após esses passos deve-se poder:
 
-- Acessar aplicação localmente através de http://127.0.0.1:5000
+- Acessar aplicação localmente através de http://127.0.0.1:3000
 - Realizar upload de arquivos 
 - Ao clicar no botão de atualizar arquivos, recuperar arquivos presentes na Cloud Storage
 
